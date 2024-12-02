@@ -21,6 +21,11 @@ app.get('/', (req, res) => {
     res.render('index'); // Render the index.ejs file
 });
 
+// Route for the addEvent.ejs file
+app.get('/addEvent', (req, res) => {
+    res.render('addEvent'); // Render the addEvent.ejs file
+});
+
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
