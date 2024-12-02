@@ -14,6 +14,9 @@ app.set('view engine', 'ejs');
 // Middleware to parse URL-encoded data
 app.use(express.urlencoded({extended: true}));
 
+app.use(express.static('public'));
+
+
 const port = 3010;
 
 // Route for the index.ejs file
