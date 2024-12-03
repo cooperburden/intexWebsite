@@ -34,7 +34,36 @@ const knexStaff = require('knex')({
     }
 });
 
+// Test Query
+knexStaff.raw('SELECT 1+1 AS result')
+  .then(data => {
+    console.log('Database connection successful:', data); // Expect: [ { result: 2 } ]
+  })
+  .catch(err => {
+    console.error('Database connection failed:', err);
+  });
 
+
+app.get('/staffView', (req, res) => {
+    knexStaff('employee') // Fetching from the `employee` table in the `intexStaff` database
+      .select(
+        'emp_id',
+        'emp_first_name',
+        'emp_last_name',
+        'emp_email',
+        'emp_phone',
+        'emp_username',
+        'emp_password'
+      )
+      .then(employeeData => {
+        res.render('staffView', {employees: employeeData });
+        // Right now, nothing is done with `employeeData`
+      })
+      .catch(error => {
+        console.error('Error querying database:', error);
+      });
+  });
+  
 
 // Middleware to parse URL-encoded data
 app.use(express.urlencoded({extended: true}));
