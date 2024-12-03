@@ -29,6 +29,12 @@ app.get('/addEvent', (req, res) => {
     res.render('addEvent'); // Render the addEvent.ejs file
 });
 
+//route for the staffLogin.ejs file
+app.get('/staffLogin', (req, res) => {
+    res.render('staffLogin', { errorMessage: null }); // Pass null if no error
+});
+
+
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
