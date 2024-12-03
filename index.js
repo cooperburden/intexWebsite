@@ -29,6 +29,11 @@ app.get('/addEvent', (req, res) => {
     res.render('addEvent'); // Render the addEvent.ejs file
 });
 
+app.get('/staffView', (req, res) => {
+    res.render('staffView'); // Render the staffView.ejs file
+});
+
+
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });

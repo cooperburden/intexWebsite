@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container my-5">
+        <h1 class="text-center mb-4">Database Tables</h1>
+
+        <!-- Tab Navigation -->
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="table1-tab" data-bs-toggle="tab" data-bs-target="#table1" type="button" role="tab" aria-controls="table1" aria-selected="true">
+                    EVENT RECORDS
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="table2-tab" data-bs-toggle="tab" data-bs-target="#table2" type="button" role="tab" aria-controls="table2" aria-selected="false">
+                    EMPLOYEE RECORDS
+                </button>
+            </li>
+            <li class="nav-item" role="presentation"></li>
+                <button class="nav-link" id="table3-tab" data-bs-toggle="tab" data-bs-target="#table3" type="button" role="tab" aria-controls="table3" aria-selected="false">
+                    EVENT STATISTICS
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="myTabContent">
+            <!-- Table 1 Content -->
+            <div class="tab-pane fade show active" id="table1" role="tabpanel" aria-labelledby="table1-tab">
+                <div class="table-responsive mt-3">
+                    <h1>Event Records</h1>
+                    <br><br>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Column 1</th>
+                                <th>Column 2</th>
+                                <th>Column 3</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Data 1</td>
+                                <td>Data 2</td>
+                                <td>Data 3</td>
+                            </tr>
+                            <tr>
+                                <td>Data 4</td>
+                                <td>Data 5</td>
+                                <td>Data 6</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Table 2 Content -->
+            <div class="tab-pane fade" id="table2" role="tabpanel" aria-labelledby="table2-tab">
+                <div class="table-responsive mt-3">
+                    <h1>Employee Records</h1>
+                    <br><br>
+    
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center;">Employee ID</th>
+                                <th style="text-align: center;">Employee First Name</th>
+                                <th style="text-align: center;">Employee Last Name</th>
+                                <th style="text-align: center;">Employee Email</th>
+                                <th style="text-align: center;">Employee Phone Number</th>
+                                <th style="text-align: center;">Employee Username</th>
+                                <th style="text-align: center;">Actions</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Data A</td>
+                                <td>Data B</td>
+                                <td>Data C</td>
+                                <td>Data D</td>
+                                <td>Data E</td>
+                                <td>Data F</td>
+                             
+
+                            </tr>
+                            <tr>
+                                <td>Data H</td>
+                                <td>Data I</td>
+                                <td>Data J</td>
+                                <td>Data K</td>
+                                <td>Data L</td>
+                                <td>Data M</td>
+                    
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+     <!-- Table 3 Content -->
+     <div class="tab-pane fade" id="table3" role="tabpanel" aria-labelledby="table3-tab">
+        <div class="table-responsive mt-3">
+            <P>This will be a tableau chart for Jen </P>
+        </div>
+    </div>
+</div>
+</div>
+
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
