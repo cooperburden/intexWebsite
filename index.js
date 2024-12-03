@@ -11,6 +11,31 @@ const app = express();
 // Set EJS as the templating engine
 app.set('view engine', 'ejs');
 
+
+const knexMain = require('knex') ({
+    client : 'pg',
+    connection : {
+        host :  'localhost',
+        user : 'postgres',
+        password : 'Ilovemom2!',
+        database : 'intexMain',
+        port: 5432,
+    }
+})
+
+const knexStaff = require('knex')({
+    client: 'pg',
+    connection: {
+        host: 'localhost',
+        user: 'postgres',
+        password: 'Ilovemom2!',
+        database: 'intexStaff', 
+        port: 5432,
+    }
+});
+
+
+
 // Middleware to parse URL-encoded data
 app.use(express.urlencoded({extended: true}));
 
