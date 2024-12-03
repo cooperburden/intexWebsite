@@ -34,6 +34,11 @@ app.get('/staffView', (req, res) => {
 });
 
 
+app.get('/staffLogin', (req, res) => {
+    res.render('staffLogin', { errorMessage: null }); // Pass errorMessage as null initially
+});
+
+
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
