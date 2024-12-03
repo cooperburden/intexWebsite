@@ -255,6 +255,58 @@
                     </div>
                 </div>
 
+
+<!-- Are there any children under the age of 10 helping? -->
+<div class="mb-3">
+    <label class="form-label">Are there any children under the age of 10 helping?</label>
+    <div>
+        <input 
+            type="radio" 
+            id="children_yes" 
+            name="children_option" 
+            value="yes" 
+            onclick="toggleChildrenInput()">
+        <label for="children_yes">Yes</label>
+        <br>
+        <input 
+            type="radio" 
+            id="children_no" 
+            name="children_option" 
+            value="no" 
+            onclick="toggleChildrenInput()">
+        <label for="children_no">No</label>
+    </div>
+</div>
+
+<!-- How many children under the age of 10? (Initially Hidden) -->
+<div style="max-width: 50%;" id="children_input" style="display: none; margin-left: 20px;">
+    <label for="children_count" class="form-label">How many children under 10?</label>
+    <input 
+        type="number;" 
+        id="children_count" 
+        name="children_count" 
+        class="form-control" 
+        placeholder="Enter the number of children"
+        min="0">
+</div>
+
+<script>
+    function toggleChildrenInput() {
+        // Get the radio buttons and the hidden input field
+        const childrenYes = document.getElementById('children_yes');
+        const childrenInput = document.getElementById('children_input');
+
+        // Show the input field if "Yes" is selected, hide it otherwise
+        if (childrenYes.checked) {
+            childrenInput.style.display = 'block';
+        } else {
+            childrenInput.style.display = 'none';
+        }
+    }
+</script>
+
+
+
                 <!-- Privacy -->
                 <fieldset class="mb-3">
                     <legend class="form-label">Privacy</legend>
