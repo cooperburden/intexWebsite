@@ -10,24 +10,31 @@
             background: url('/images/AdobeStock_480714411.jpeg') no-repeat center center fixed;
             background-size: cover;
             font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
         }
 
         .container {
             display: flex;
-            justify-content: right; /* Align items to the right */
+            justify-content: flex-end; /* Align container to the right */
             align-items: center; /* Center items vertically */
             height: 100vh; /* Full viewport height */
+            padding-right: 2%; /* Adjust padding for a slight gap from the right edge */
         }
 
-            .login-container {
-            max-width: 800px; /* Increased width */
-            padding: 20px;
-            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
-            border-radius: 8px;
-            margin-right: 20px; /* Adjust spacing from the right edge */
+        .login-container {
+            width: 50%; /* Occupies half the webpage width */
+            padding: 30px; /* Increased padding for better spacing */
+            background-color: rgba(255, 255, 255, 0.562); /* Semi-transparent white background */
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Slightly darker shadow */
+            border-radius: 10px; /* Increased border radius for smoother edges */
+            height: max-content;
         }
 
+        h1 {
+            font-size: 2rem;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -54,4 +61,3 @@
     </div>
 </body>
 </html>
-
