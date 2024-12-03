@@ -6,18 +6,33 @@
     <title>Staff Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .login-container {
-            max-width: 400px; /* Set the maximum width of the form */
-            margin: 50px auto; /* Center the form vertically and horizontally */
+        body {
+            background: url('/images/AdobeStock_480714411.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            justify-content: right; /* Align items to the right */
+            align-items: center; /* Center items vertically */
+            height: 100vh; /* Full viewport height */
+        }
+
+            .login-container {
+            max-width: 800px; /* Increased width */
             padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
             border-radius: 8px;
+            margin-right: 20px; /* Adjust spacing from the right edge */
         }
+
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="login-container bg-light">
+        <div class="login-container">
             <h1 class="text-center">Staff Login</h1>
             <form action="/login" method="POST" class="mt-4">
                 <div class="mb-3">
@@ -39,5 +54,4 @@
     </div>
 </body>
 </html>
-
 
