@@ -193,7 +193,6 @@ app.post('/editEmployee/:id', async (req, res) => {
 });
 
 
-
 app.post("/staffLogin", async (req, res) => {
     const { emp_username, emp_password } = req.body;
 
