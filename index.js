@@ -203,9 +203,24 @@ app.get('/staffView', async (req, res) => {
             .filter(event => event.completed)
             .sort((a, b) => new Date(b.date_of_event) - new Date(a.date_of_event)); // Most recent first
 
-        const upcomingEvents = events
+            const upcomingEvents = events
             .filter(event => !event.completed)
-            .sort((a, b) => new Date(a.date_of_event) - new Date(b.date_of_event)); // Oldest first
+            .sort((a, b) => {
+                const dateA = new Date(a.date_of_event);
+                const dateB = new Date(b.date_of_event);
+        
+                // First, compare by date
+                if (dateA.getTime() !== dateB.getTime()) {
+                    return dateA - dateB;
+                }
+        
+                // If the dates are the same, compare by time
+                const timeA = a.time_of_activity ? new Date(`1970-01-01T${a.time_of_activity}Z`) : new Date(0);
+                const timeB = b.time_of_activity ? new Date(`1970-01-01T${b.time_of_activity}Z`) : new Date(0);
+        
+                return timeA - timeB;
+            });
+        
 
         // Pass past and upcoming events separately
         res.render('staffView', { employees, pastEvents, upcomingEvents });
@@ -342,6 +357,7 @@ app.post('/addEvent', async (req, res) => {
             children_option,
             children_count,
             privacy,
+            time_of_activity,
         } = req.body;
 
         // Start a transaction
@@ -409,6 +425,7 @@ app.post('/addEvent', async (req, res) => {
                     number_of_sewers: sew_option === 'yes' ? parseInt(sewing_people) || 0 : 0,
                     number_of_machines: sew_option === 'yes' ? parseInt(sewing_machines) || 0 : 0,
                     number_of_children_under_10: children_option === 'yes' ? parseInt(children_count) || 0 : 0,
+                    time_of_activity,
                 })
                 .returning('event_id');
             const event_id = newEvent.event_id;
@@ -447,6 +464,77 @@ app.post('/deleteEvent/:id', async (req, res) => {
         console.error('Error deleting event:', error);
         res.status(500).send('An error occurred while deleting the event.');
     }
+});
+
+
+
+// Route to fetch and display public events that are not completed
+app.get('/existingPublicEvents', async (req, res) => {
+    try {
+        // Fetch events with 'public' privacy and 'completed' = false
+        const publicEvents = await knexMain('events')
+            .where('privacy', 'Public')  // Check for public events
+            .andWhere('completed', false)  // Only include events that are not completed
+            .orderBy('date_of_event', 'asc');  // Optionally, you can order by event date
+
+        // Render the public events view and pass the events data
+        res.render('existingPublicEvents', { publicEvents });
+    } catch (error) {
+        console.error('Error fetching public events:', error);
+        res.status(500).send('An error occurred while fetching events.');
+    }
+});
+
+
+
+// Route to show the participant form for joining an event
+app.get('/participantJoining/:eventId', (req, res) => {
+    const eventId = req.params.eventId;  // Get the event ID from the URL
+    res.render('participantJoining', { eventId });
+});
+
+
+// POST route to handle participant form submission
+app.post('/submitParticipant/:eventId', async (req, res) => {
+    const { first_name, last_name, email, phone_number, sews } = req.body;
+    const eventId = req.params.eventId;
+
+    try {
+        const [newParticipant] = await knexMain('participants')
+            .insert({
+                first_name,
+                last_name,
+                email,
+                phone_number,
+                role_id: 3,  // Always Participant role
+                sews: sews || false  // Default to 'false' if not provided
+            })
+            .returning('participant_id');
+
+        const participant_id = newParticipant.participant_id;
+
+        // Link the participant to the event
+        await knexMain('eventparticipants')
+            .insert({
+                event_id: eventId,
+                participant_id,
+                attendance_status: 'Registered'
+            });
+
+        res.redirect(`/thankYouParticipant/${eventId}`);  // Redirect to the correct thank-you page with eventId
+    } catch (error) {
+        console.error('Error submitting participant:', error);
+        res.status(500).send('An error occurred while submitting your information.');
+    }
+});
+
+
+
+
+// GET route for the thank-you page with dynamic eventId
+app.get('/thankYouParticipant/:eventId', (req, res) => {
+    const eventId = req.params.eventId;  // Extract eventId from the URL
+    res.render('thankYouParticipant', { eventId });  // Pass eventId to the template
 });
 
 

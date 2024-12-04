@@ -68,6 +68,7 @@
                                 <th>Event ID</th>
                                 <th>Event Name</th>
                                 <th>Date of Event</th>
+                                <th>Time of Event</th>
                                 <th>Event Address</th>
                                 <th>Event City</th>
                                 <th>Event State</th>
@@ -84,6 +85,7 @@
                                     <td><%= event.event_id %></td>
                                     <td><%= event.event_name %></td>
                                     <td><%= event.date_of_event %></td>
+                                    <td><%= event.time_of_activity ? event.time_of_activity : 'TBD' %></td>
                                     <td><%= event.event_address %></td>
                                     <td><%= event.event_city %></td>
                                     <td><%= event.event_state %></td>
@@ -119,6 +121,7 @@
                                 <th>Event ID</th>
                                 <th>Event Name</th>
                                 <th>Date of Event</th>
+                                <th>Time of Event</th>
                                 <th>Event Address</th>
                                 <th>Event City</th>
                                 <th>Event State</th>
@@ -140,6 +143,7 @@
                                     <td><%= event.event_id %></td>
                                     <td><%= event.event_name %></td>
                                     <td><%= event.date_of_event %></td>
+                                    <td><%= event.time_of_activity ? event.time_of_activity : 'TBD' %></td>
                                     <td><%= event.event_address %></td>
                                     <td><%= event.event_city %></td>
                                     <td><%= event.event_state %></td>
@@ -201,7 +205,9 @@
                                         <div class="btn-group">
                                             <a href="/editEmployee/<%= employee.emp_id %>" class="btn btn-sm btn-primary">Edit</a>
 
-                                                <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+                                            <form action="/deleteEmployee/<%= employee.emp_id %>" method="POST" onsubmit="return confirm('Are you sure you want to delete this employee?');">
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                            </form>
                                             </form>
                                         </div>
                                     </td>
