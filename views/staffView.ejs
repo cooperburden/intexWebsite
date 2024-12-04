@@ -11,12 +11,7 @@
             background-color: rgb(228, 221, 221);
         }
 
-        th {
-            text-align: center;
-            vertical-align: middle;
-        }
-
-        td {
+        th, td {
             text-align: center;
             vertical-align: middle;
         }
@@ -24,12 +19,12 @@
         .btn-group {
             display: flex;
             justify-content: center;
-            gap: 1px; /* Adds spacing between buttons */
+            gap: 1px;
         }
 
         .table td,
         .table th {
-            padding: 10px; /* Adjusts spacing within table cells */
+            padding: 10px;
         }
     </style>
 </head>
@@ -67,40 +62,45 @@
             <div class="tab-pane fade show active" id="table1" role="tabpanel" aria-labelledby="table1-tab">
                 <div class="table-responsive mt-3">
                     <h1>Completed Event Records</h1>
-                    <br><br>
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>Column 1</th>
-                                <th>Column 2</th>
-                                <th>Column 3</th>
+                                <th>Event ID</th>
+                                <th>Event Name</th>
+                                <th>Date of Event</th>
+                                <th>Event Address</th>
+                                <th>Event City</th>
+                                <th>Event State</th>
+                                <th>Event Zip</th>
+                                <th>Actual Attendance</th>
+                                <th>Actual Event Duration</th>
+                                <th>Completed</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Data 1</td>
-                                <td>Data 2</td>
-                                <td>Data 3</td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-primary">Edit</button>
-                                        <button class="btn btn-sm btn-danger">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Data 4</td>
-                                <td>Data 5</td>
-                                <td>Data 6</td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-primary">Edit</button>
-                                        <button class="btn btn-sm btn-danger">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
+                            <% pastEvents.forEach(event => { %>
+                                <tr>
+                                    <td><%= event.event_id %></td>
+                                    <td><%= event.event_name %></td>
+                                    <td><%= event.date_of_event %></td>
+                                    <td><%= event.event_address %></td>
+                                    <td><%= event.event_city %></td>
+                                    <td><%= event.event_state %></td>
+                                    <td><%= event.event_zip %></td>
+                                    <td><%= event.actual_attendance || 'N/A' %></td>
+                                    <td><%= event.actual_event_duration || 'N/A' %></td>
+                                    <td><%= event.completed ? 'Yes' : 'No' %></td>
+                                    <td>
+                                        <a href="/editPastEvent/<%= event.event_id %>" class="btn btn-sm btn-primary">Edit</a>
+                                        <form action="/deleteEvent/<%= event.event_id %>" method="POST" onsubmit="return confirm('Are you sure you want to delete this event?');" style="display: inline;">
+                                            <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% }) %>
                         </tbody>
+                        
                     </table>
                 </div>
             </div>
@@ -109,30 +109,53 @@
             <div class="tab-pane fade" id="table2" role="tabpanel" aria-labelledby="table2-tab">
                 <div class="table-responsive mt-3">
                     <h1>Upcoming Event Records</h1>
-                    <br><br>
                     <table class="table table-bordered">
                         <thead>
                             <tr>
                                 <th>Event ID</th>
                                 <th>Event Name</th>
-                                <th>Date</th>
-                                <th>Location</th>
+                                <th>Date of Event</th>
+                                <th>Event Address</th>
+                                <th>Event City</th>
+                                <th>Event State</th>
+                                <th>Event Zip</th>
+                                <th>Event Description</th>
+                                <th>Estimated Attendance</th>
+                                <th>Estimated Event Duration</th>
+                                <th>Privacy</th>
+                                <th>Number of Sewers</th>
+                                <th>Number of Machines</th>
+                                <th>Number of Children Under 10</th>
+                                <th>Completed</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Sample Event</td>
-                                <td>2024-12-05</td>
-                                <td>New York</td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-primary">Edit</button>
-                                        <button class="btn btn-sm btn-danger">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
+                            <% upcomingEvents.forEach(event => { %>
+                                <tr>
+                                    <td><%= event.event_id %></td>
+                                    <td><%= event.event_name %></td>
+                                    <td><%= event.date_of_event %></td>
+                                    <td><%= event.event_address %></td>
+                                    <td><%= event.event_city %></td>
+                                    <td><%= event.event_state %></td>
+                                    <td><%= event.event_zip %></td>
+                                    <td><%= event.event_description || 'N/A' %></td>
+                                    <td><%= event.estimated_attendance || 'N/A' %></td>
+                                    <td><%= event.estimated_event_duration || 'N/A' %></td>
+                                    <td><%= event.privacy || 'N/A' %></td>
+                                    <td><%= event.number_of_sewers || 0 %></td>
+                                    <td><%= event.number_of_machines || 0 %></td>
+                                    <td><%= event.number_of_children_under_10 || 0 %></td>
+                                    <td><%= event.completed ? 'Yes' : 'No' %></td>
+                                    <td>
+                                        <a href="/editUpcomingEvent/<%= event.event_id %>" class="btn btn-sm btn-primary">Edit</a>
+                                        <form action="/deleteEvent/<%= event.event_id %>" method="POST" onsubmit="return confirm('Are you sure you want to delete this event?');" style="display: inline;">
+                                            <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% }) %>
                         </tbody>
                     </table>
                 </div>
@@ -142,11 +165,9 @@
             <div class="tab-pane fade" id="table3" role="tabpanel" aria-labelledby="table3-tab">
                 <div class="table-responsive mt-3">
                     <h1>Employee Records</h1>
-                    <br>
                     <div class="d-flex justify-content-center my-3">
                         <a href="/addEmployee" class="btn btn-success">+ Add Employee </a>
                     </div>
-                    <br>
                     <table class="table table-bordered">
                         <thead>
                             <tr>
@@ -171,7 +192,7 @@
                                     <td>
                                         <div class="btn-group">
                                             <a href="/editEmployee/<%= employee.emp_id %>" class="btn btn-sm btn-primary">Edit</a>
-                                            <form action="/deleteEmployee/<%= employee.emp_id %>" method="POST" onsubmit="return confirmDeletion();" style="display: inline;">
+                                            <form action="/deleteEmployee/<%= employee.emp_id %>" method="POST" onsubmit="return confirm('Are you sure you want to delete this record?');" style="display: inline;">
                                                 <button class="btn btn-sm btn-danger" type="submit">Delete</button>
                                             </form>
                                         </div>
@@ -179,23 +200,14 @@
                                 </tr>
                             <% }) %>
                         </tbody>
-                        
-                        
                     </table>
                 </div>
             </div>
 
-            <script>
-                function confirmDeletion() {
-                    return confirm('Are you sure you want to delete this record?');
-                }
-            </script>
-            
-
             <!-- Table 4 Content -->
             <div class="tab-pane fade" id="table4" role="tabpanel" aria-labelledby="table4-tab">
                 <div class="table-responsive mt-3">
-                    <p>This will be a tableau chart for Jen</p>
+                    <p>This will be a Tableau chart for Jen.</p>
                 </div>
             </div>
         </div>
