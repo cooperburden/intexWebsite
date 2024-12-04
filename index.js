@@ -34,18 +34,6 @@ const knexStaff = require('knex')({
     }
 });
 
-const knexStaffLogIn = require('knex')({
-    client: 'pg',
-    connection: {
-        host: 'localhost',
-        user: 'postgres',
-        password: 'Gegeen22',
-        database: 'intexemployee', 
-        port: 5433,
-    }
-});
-
-
 knexStaff.raw('SELECT 1+1 AS result')
     .then(() => console.log('Database connection successful'))
     .catch(error => {
@@ -103,8 +91,8 @@ app.post("/StaffLogin", async (req, res) => {
 
     try {
         // Query the employee table using Knex
-        const employee = await knexStaffLogIn("employee")
-            .select("*")
+        const employee = await knexStaff("employeetable")
+            .select("emp_username", "emp_password")
             .where({ emp_username: username, emp_password: password })
             .first();
 
