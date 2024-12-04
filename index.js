@@ -34,6 +34,18 @@ const knexStaff = require('knex')({
     }
 });
 
+const knexStaffLogIn = require('knex')({
+    client: 'pg',
+    connection: {
+        host: 'localhost',
+        user: 'postgres',
+        password: 'password',
+        database: 'intexemployee', 
+        port: 5432,
+    }
+});
+
+
 knexStaff.raw('SELECT 1+1 AS result')
     .then(() => console.log('Database connection successful'))
     .catch(error => {
@@ -78,9 +90,37 @@ app.get('/addEvent', (req, res) => {
     res.render('addEvent'); // Render the addEvent.ejs file
 });
 
+//route for the staffLogin.ejs
 
 app.get('/staffLogin', (req, res) => {
     res.render('staffLogin', { errorMessage: null }); // Pass errorMessage as null initially
+});
+
+// Handle login form submission
+app.post("/staffLogin", async (req, res) => {
+    const { emp_username, emp_password } = req.body;
+
+    try {
+        // Query the database using Knex
+        const user = await knexStaffLogIn("employeetable")
+            .select("*")
+            .where({ emp_username, emp_password })
+            .first(); // `.first()` ensures we get only one result
+
+        if (user) {
+            // Redirect to staffView.ejs if login is successful
+            res.render("staffView", { user: username });
+        } else {
+            // If no match, reload login with error message
+            res.render("staffLogin", { error: "Invalid username or password", 
+                username: "", // Clear the username input
+                password: "", // Clear the password input
+                 });
+        }
+    } catch (err) {
+        console.error("Error during login process:", err);
+        res.status(500).send("Internal Server Error");
+    }
 });
 
 
