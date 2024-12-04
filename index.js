@@ -166,6 +166,10 @@ app.post('/staffLogin', async (req, res) => {
                 .filter(event => !event.completed)
                 .sort((a, b) => new Date(a.date_of_event) - new Date(b.date_of_event));
 
+                // Fetch all pending events (approved: false)
+            const pendingEvents = events.filter(event => event.approved === false);
+
+
             // Fetch all employees
             const employees = await knexStaff('employeetable').select('*')
             .orderBy('emp_id', 'asc');;
@@ -176,6 +180,7 @@ app.post('/staffLogin', async (req, res) => {
                 employees,
                 pastEvents,
                 upcomingEvents,
+                pendingEvents,
             });
         } else {
             res.render('staffLogin', { errorMessage: 'Invalid username or password' });
@@ -277,6 +282,40 @@ app.post('/editEmployee/:id', async (req, res) => {
     }
 });
 
+
+// Approve Event Route
+app.post('/approveEvent/:eventId', async (req, res) => {
+    const { eventId } = req.params;
+    try {
+        await knexMain('events')
+            .where('event_id', eventId)
+            .update({ approved: true });  // Assuming 'approved' is a boolean field
+
+        res.redirect('/staffView');  // Redirect back to the staff view after the approval
+    } catch (error) {
+        console.error('Error approving event:', error);
+        res.status(500).send('An error occurred while approving the event.');
+    }
+});
+
+// Deny Event Route
+app.post('/denyEvent/:eventId', async (req, res) => {
+    const { eventId } = req.params;
+    try {
+        await knexMain('events')
+            .where('event_id', eventId)
+            .update({ approved: false });  // Assuming 'approved' is a boolean field
+
+        res.redirect('/staffView');  // Redirect back to the staff view after the denial
+    } catch (error) {
+        console.error('Error denying event:', error);
+        res.status(500).send('An error occurred while denying the event.');
+    }
+});
+
+
+
+
 // Staff View route
 app.get('/staffView', async (req, res) => {
     try {
@@ -287,17 +326,36 @@ app.get('/staffView', async (req, res) => {
         const events = await knexMain('events')
             .select('*');
 
-        // Filter and sort events
+        // Filter and sort past events (completed = true)
         const pastEvents = events
-            .filter(event => event.completed)
+            .filter(event => event.completed) // Only completed events
             .sort((a, b) => new Date(b.date_of_event) - new Date(a.date_of_event)); // Most recent first
 
+        // Filter and sort upcoming events (completed = false, approved = true)
         const upcomingEvents = events
-            .filter(event => !event.completed)
-            .sort((a, b) => new Date(a.date_of_event) - new Date(b.date_of_event)); // Oldest first
+            .filter(event => !event.completed && event.approved === true) // Only approved upcoming events
+            .sort((a, b) => {
+                const dateA = new Date(a.date_of_event);
+                const dateB = new Date(b.date_of_event);
+        
+                // First, compare by date
+                if (dateA.getTime() !== dateB.getTime()) {
+                    return dateA - dateB;
+                }
+        
+                // If the dates are the same, compare by time
+                const timeA = a.time_of_activity ? new Date(`1970-01-01T${a.time_of_activity}Z`) : new Date(0);
+                const timeB = b.time_of_activity ? new Date(`1970-01-01T${b.time_of_activity}Z`) : new Date(0);
+        
+                return timeA - timeB;
+            });
 
-        // Pass past and upcoming events separately
-        res.render('staffView', { employees, pastEvents, upcomingEvents });
+        // Filter for pending events (completed = false, approved = false)
+        const pendingEvents = events
+            .filter(event => !event.completed && event.approved === false); // Only uncompleted and unapproved events
+
+        // Pass all event categories and employees to the view
+        res.render('staffView', { employees, pastEvents, upcomingEvents, pendingEvents });
     } catch (error) {
         console.error('Error fetching staff view:', error);
         res.status(500).send('An error occurred while fetching staff view.');
@@ -305,24 +363,34 @@ app.get('/staffView', async (req, res) => {
 });
 
 
-// Edit Upcoming Events routes
-app.get('/editUpcomingEvent/:id', async (req, res) => {
-    const eventId = req.params.id;
 
+
+// Express route to get the event details and render the "Edit" form
+app.get('/editUpcomingEvent/:eventId', async (req, res) => {
     try {
-        const event = await knexMain('events')
-            .select('event_id', 'event_name', 'date_of_event', 'actual_attendance', 'completed')
-            .where('event_id', eventId)
-            .first();
+        const eventId = req.params.eventId;
+        const event = await getEventById(eventId); // This is a database query to fetch the event by ID
+        
+        if (!event) {
+            return res.status(404).send('Event not found');
+        }
 
-        if (!event) return res.status(404).send('Event not found');
-
+        // Pass the event data to the EJS template
         res.render('editUpcomingEvent', { event });
     } catch (error) {
-        console.error('Error fetching event:', error);
-        res.status(500).send('An error occurred while fetching the event data.');
+        console.error(error);
+        res.status(500).send('Server error');
     }
 });
+
+async function getEventById(eventId) {
+    const result = await knexMain('events').where('event_id', eventId).first(); 
+    return result; // Return the event object
+}
+
+
+module.exports = { getEventById };
+
 
 app.post('/editUpcomingEvent/:id', async (req, res) => {
     const eventId = req.params.id;
@@ -371,18 +439,25 @@ app.get('/editPastEvent/:id', async (req, res) => {
 
 app.post('/editPastEvent/:id', async (req, res) => {
     const eventId = req.params.id;
-    const { actual_attendance, actual_event_duration, completed } = req.body;
+    const { actual_attendance, actual_event_duration, completed, approved } = req.body;
 
-    console.log('Received data:', { eventId, actual_attendance, actual_event_duration, completed });
+    console.log('Received data:', { eventId, actual_attendance, actual_event_duration, completed, approved });
 
     try {
+        // Determine the completed status (convert 'yes'/'no' to boolean)
+        const isCompleted = completed === 'yes';
+
+        // For the completed event, we should only update 'approved' if it's true (because it shouldn't be unapproved if completed is set to 'yes')
+        const isApproved = isCompleted ? (approved === 'yes') : true; // If not completed, we assume it's automatically approved
+
         // Update the event in the database
         const result = await knexMain('events')
             .where('event_id', eventId)
             .update({
                 actual_attendance: actual_attendance || null, // Handle empty input
                 actual_event_duration: actual_event_duration || null, // Handle empty input
-                completed: completed === 'yes', // Convert 'yes'/'no' to boolean
+                completed: isCompleted, // Update completed status
+                approved: isApproved, // Update approved only if completed is true, else leave it as approved automatically
             });
 
         console.log('Update result:', result); // Log the number of rows updated
@@ -398,6 +473,8 @@ app.post('/editPastEvent/:id', async (req, res) => {
         res.status(500).send('An error occurred while updating the event.');
     }
 });
+
+
 
 
 // Render the "Add Event" form
@@ -431,6 +508,7 @@ app.post('/addEvent', async (req, res) => {
             children_option,
             children_count,
             privacy,
+            time_of_activity,
         } = req.body;
 
         // Start a transaction
@@ -498,6 +576,8 @@ app.post('/addEvent', async (req, res) => {
                     number_of_sewers: sew_option === 'yes' ? parseInt(sewing_people) || 0 : 0,
                     number_of_machines: sew_option === 'yes' ? parseInt(sewing_machines) || 0 : 0,
                     number_of_children_under_10: children_option === 'yes' ? parseInt(children_count) || 0 : 0,
+                    time_of_activity,
+                    approved: false
                 })
                 .returning('event_id');
             const event_id = newEvent.event_id;
@@ -537,6 +617,80 @@ app.post('/deleteEvent/:id', async (req, res) => {
         res.status(500).send('An error occurred while deleting the event.');
     }
 });
+
+
+
+app.get('/existingPublicEvents', async (req, res) => {
+    try {
+        const events = await knexMain('events')
+            .where({ approved: true, privacy: 'Public' }) // Filter for approved and public events
+            .select('*');
+
+        // Pass the filtered events to the view
+        res.render('existingPublicEvents', { events });
+    } catch (error) {
+        console.error('Error fetching public events:', error);
+        res.status(500).send('An error occurred while fetching events.');
+    }
+});
+
+
+
+
+// Route to show the participant form for joining an event
+app.get('/participantJoining/:eventId', (req, res) => {
+    const eventId = req.params.eventId;  // Get the event ID from the URL
+    res.render('participantJoining', { eventId });
+});
+
+
+// POST route to handle participant form submission
+app.post('/submitParticipant/:eventId', async (req, res) => {
+    const { first_name, last_name, email, phone_number, sews } = req.body;
+    const eventId = req.params.eventId;
+
+    try {
+        const [newParticipant] = await knexMain('participants')
+            .insert({
+                first_name,
+                last_name,
+                email,
+                phone_number,
+                role_id: 3,  // Always Participant role
+                sews: sews || false  // Default to 'false' if not provided
+            })
+            .returning('participant_id');
+
+        const participant_id = newParticipant.participant_id;
+
+        // Link the participant to the event
+        await knexMain('eventparticipants')
+            .insert({
+                event_id: eventId,
+                participant_id,
+                attendance_status: 'Registered'
+            });
+
+        res.redirect(`/thankYouParticipant/${eventId}`);  // Redirect to the correct thank-you page with eventId
+    } catch (error) {
+        console.error('Error submitting participant:', error);
+        res.status(500).send('An error occurred while submitting your information.');
+    }
+});
+
+
+
+
+// GET route for the thank-you page with dynamic eventId
+app.get('/thankYouParticipant/:eventId', (req, res) => {
+    const eventId = req.params.eventId;  // Extract eventId from the URL
+    res.render('thankYouParticipant', { eventId });  // Pass eventId to the template
+});
+
+
+
+
+
 
 
 
