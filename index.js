@@ -116,9 +116,6 @@ app.post("/StaffLogin", async (req, res) => {
 });
 
 
-<<<<<<< HEAD
-=======
-
 app.post("/staffLogin", async (req, res) => {
     const { emp_username, emp_password } = req.body;
 
@@ -169,7 +166,6 @@ app.post("/staffLogin", async (req, res) => {
 
 
 
->>>>>>> a84906442d1938646701176c7f50ecd33c58d3fb
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
