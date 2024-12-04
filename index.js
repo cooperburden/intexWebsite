@@ -66,6 +66,8 @@ app.use(express.urlencoded({extended: true}));
 
 app.use(express.static('public'));
 
+app.use(express.json());
+
 
 const port = 3010;
 
@@ -192,35 +194,49 @@ app.post('/editEmployee/:id', async (req, res) => {
 
 
 
-// Handle login form submission
 app.post("/staffLogin", async (req, res) => {
-    const { username, password } = req.body;
- 
- 
+    const { emp_username, emp_password } = req.body;
+
+    console.log("Username:", emp_username); // Debug log
+    console.log("Password:", emp_password); // Debug log
+
     try {
-        // Query the employee table using Knex
+        // Query the employee table for the logged-in user
         const employee = await knexStaff("employeetable")
-            .select("emp_username", "emp_password")
-            .where({ emp_username: username, emp_password: password })
+            .select("emp_username", "emp_password", "emp_first_name", "emp_last_name")
+            .where("emp_username", emp_username)
+            .andWhere("emp_password", emp_password)
             .first();
- 
- 
+
         if (employee) {
-            // Redirect to staffView.ejs if login is successful
-            res.render("staffView", { user: `${employee.emp_first_name} ${employee.emp_last_name}` });
+            // Query all employees to pass to staffView.ejs
+            const employees = await knexStaff("employeetable").select(
+                "emp_id",
+                "emp_first_name",
+                "emp_last_name",
+                "emp_email",
+                "emp_phone",
+                "emp_username"
+            );
+
+            // Render the staffView page with user and employees data
+            res.render("staffView", { 
+                user: `${employee.emp_first_name} ${employee.emp_last_name}`,
+                employees 
+            });
         } else {
-            // If no match, reload login with error message and clear inputs
+            // If no match, reload login with error message
             res.render("staffLogin", {
-                error: "Invalid username or password",
-                username: "",
-                password: "",
+                errorMessage: "Invalid username or password",
             });
         }
     } catch (err) {
         console.error("Error during login process:", err);
         res.status(500).send("Internal Server Error");
     }
- });
+});
+
+
  
 
 
