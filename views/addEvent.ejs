@@ -121,8 +121,8 @@
                         <label for="date_of_activity" class="form-label">Event Date</label>
                         <input 
                             type="date" 
-                            id="date_of_activity" 
-                            name="date_of_activity" 
+                            id="date_of_event" 
+                            name="date_of_event" 
                             class="form-control"
                             aria-label="Event Date"
                             required>
@@ -133,27 +133,117 @@
                         </label>
                         <input 
                             type="date" 
-                            id="secondary_date_of_activity" 
-                            name="secondary_date_of_activity" 
+                            id="secondary_event_date" 
+                            name="secondary_event_date" 
                             class="form-control"
                             aria-label="Secondary Event Date"
                             required>
                     </div>
                 </div>
 
-                <!-- Activity Address and Expected Attendance -->
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="activity_address" class="form-label">Activity Address</label>
-                        <input 
-                            type="text" 
-                            id="activity_address" 
-                            name="activity_address" 
-                            class="form-control"
-                            placeholder="Enter the activity address" 
-                            aria-label="Activity Address"
-                            required>
+                
+                        <!-- Activity Address -->
+                <div class="mb-3">
+                    <label for="street_address" class="form-label"> Event Street Address</label>
+                    <input 
+                      type="text" 
+                      id="street_address" 
+                      name="street_address" 
+                      class="form-control" 
+                      placeholder="123 Main St" 
+                      aria-label="Street Address" 
+                      required>
+                  </div>
+  
+                  <div class="row mb-3">
+                    <div class="col-md-4">
+                      <label for="city" class="form-label">City</label>
+                      <input 
+                        type="text" 
+                        id="city" 
+                        name="city" 
+                        class="form-control" 
+                        placeholder="City Name" 
+                        aria-label="City" 
+                        required>
                     </div>
+                    <div class="col-md-4">
+                        <label for="state" class="form-label">State</label>
+                        <select id="state" name="state" class="form-select" aria-label="State" required>
+                          <option value="" disabled selected>Select a state</option>
+                          <option value="AL">Alabama (AL)</option>
+                          <option value="AK">Alaska (AK)</option>
+                          <option value="AZ">Arizona (AZ)</option>
+                          <option value="AR">Arkansas (AR)</option>
+                          <option value="CA">California (CA)</option>
+                          <option value="CO">Colorado (CO)</option>
+                          <option value="CT">Connecticut (CT)</option>
+                          <option value="DE">Delaware (DE)</option>
+                          <option value="FL">Florida (FL)</option>
+                          <option value="GA">Georgia (GA)</option>
+                          <option value="HI">Hawaii (HI)</option>
+                          <option value="ID">Idaho (ID)</option>
+                          <option value="IL">Illinois (IL)</option>
+                          <option value="IN">Indiana (IN)</option>
+                          <option value="IA">Iowa (IA)</option>
+                          <option value="KS">Kansas (KS)</option>
+                          <option value="KY">Kentucky (KY)</option>
+                          <option value="LA">Louisiana (LA)</option>
+                          <option value="ME">Maine (ME)</option>
+                          <option value="MD">Maryland (MD)</option>
+                          <option value="MA">Massachusetts (MA)</option>
+                          <option value="MI">Michigan (MI)</option>
+                          <option value="MN">Minnesota (MN)</option>
+                          <option value="MS">Mississippi (MS)</option>
+                          <option value="MO">Missouri (MO)</option>
+                          <option value="MT">Montana (MT)</option>
+                          <option value="NE">Nebraska (NE)</option>
+                          <option value="NV">Nevada (NV)</option>
+                          <option value="NH">New Hampshire (NH)</option>
+                          <option value="NJ">New Jersey (NJ)</option>
+                          <option value="NM">New Mexico (NM)</option>
+                          <option value="NY">New York (NY)</option>
+                          <option value="NC">North Carolina (NC)</option>
+                          <option value="ND">North Dakota (ND)</option>
+                          <option value="OH">Ohio (OH)</option>
+                          <option value="OK">Oklahoma (OK)</option>
+                          <option value="OR">Oregon (OR)</option>
+                          <option value="PA">Pennsylvania (PA)</option>
+                          <option value="RI">Rhode Island (RI)</option>
+                          <option value="SC">South Carolina (SC)</option>
+                          <option value="SD">South Dakota (SD)</option>
+                          <option value="TN">Tennessee (TN)</option>
+                          <option value="TX">Texas (TX)</option>
+                          <option value="UT">Utah (UT)</option>
+                          <option value="VT">Vermont (VT)</option>
+                          <option value="VA">Virginia (VA)</option>
+                          <option value="WA">Washington (WA)</option>
+                          <option value="WV">West Virginia (WV)</option>
+                          <option value="WI">Wisconsin (WI)</option>
+                          <option value="WY">Wyoming (WY)</option>
+                        </select>
+                      </div>
+                      
+                    <div class="col-md-4">
+                      <label for="zip" class="form-label">ZIP Code</label>
+                      <input 
+                       type="text" 
+                        id="zip" 
+                        name="zip" 
+                        class="form-control" 
+                        placeholder="ZIP Code" 
+                        aria-label="ZIP Code" 
+                        required>
+                    </div>
+                  </div>
+  
+
+
+
+
+                <!-- Expected Attendance -->
+                <div class="row mb-3">
+
                     <div class="col-md-6">
                         <label for="expected_attendance" class="form-label">Expected Attendance</label>
                         <select 
@@ -169,6 +259,7 @@
                             <option value="50-100">51-100</option>
                             <option value="100+">100+</option>
                         </select>
+                        
                     </div>
                 </div>
 

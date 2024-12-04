@@ -78,7 +78,8 @@ app.post('/staffLogin', async (req, res) => {
                 .sort((a, b) => new Date(a.date_of_event) - new Date(b.date_of_event));
 
             // Fetch all employees
-            const employees = await knexStaff('employeetable').select('*');
+            const employees = await knexStaff('employeetable').select('*')
+            .orderBy('emp_id', 'asc');;
 
             // Pass data to the template
             res.render('staffView', {
@@ -316,73 +317,137 @@ app.get('/addEvent', (req, res) => {
 });
 
 
+// POST route to handle form submission
 app.post('/addEvent', async (req, res) => {
-    const {
-        first_name,
-        last_name,
-        d_email,
-        d_phone_number,
-        event_name,
-        date_of_activity,
-        activity_address,
-        expected_attendance,
-        estimated_duration,
-        event_description,
-        sew_option,
-        sewing_people,
-        sewing_machines,
-        children_option,
-        children_count,
-        privacy,
-    } = req.body;
-
     try {
-        // Insert event into 'events' table
-        const [event] = await knexMain('events')
-            .insert({
-                event_name: event_name || null,
-                date_of_event: date_of_activity || null,
-                event_address: activity_address || null,
-                estimated_attendance: expected_attendance || null,
-                estimated_event_duration: estimated_duration || null,
-                event_description: event_description || null,
-                privacy: privacy || null,
-                number_of_sewers: sew_option === 'yes' ? parseInt(sewing_people) || 0 : 0,
-                number_of_machines: sew_option === 'yes' ? parseInt(sewing_machines) || 0 : 0,
-                number_of_children_under_10: children_option === 'yes' ? parseInt(children_count) || 0 : 0,
-                completed: false, // Default to false for new events
-            })
-            .returning('*'); // Include 'event_id' in the result
+        // Extract data from the form
+        const {
+            first_name,
+            last_name,
+            d_email,
+            phone_number,
+            event_name,
+            date_of_event,
+            secondary_event_date,
+            street_address,
+            city,
+            state,
+            zip,
+            expected_attendance,
+            estimated_event_duration,
+            event_description,
+            sew_option,
+            sewing_people,
+            sewing_machines,
+            children_option,
+            children_count,
+            privacy,
+        } = req.body;
 
-        console.log('Event added with ID:', event.event_id);
+        // Start a transaction
+        await knexMain.transaction(async (trx) => {
+            // Check if the participant already exists
+            let participant = await trx('participants')
+                .where({ email : d_email })
+                .first();
 
-        // Insert participant into 'participants' table
-        const [participant] = await knexMain('participants')
-            .insert({
-                first_name: first_name || null,
-                last_name: last_name || null,
-                email: d_email || null,
-                phone_number: d_phone_number || null,
-            })
-            .returning('*'); // Include 'participant_id' in the result
+            let participant_id;
 
-        console.log('Participant added with ID:', participant.participant_id);
+            if (participant) {
+                participant_id = participant.participant_id;
+            } else {
+                // Insert new participant
+                const [newParticipant] = await trx('participants')
+                    .insert({
+                        first_name,
+                        last_name,
+                        email : d_email,
+                        phone_number,
+                        role_id: 1, // Assuming 'Organizer' role has role_id = 1
+                        sews: sew_option === 'yes',
+                    })
+                    .returning('participant_id');
+                participant_id = newParticipant.participant_id;
+            }
 
-        // Link event and participant in 'eventparticipants' table
-        await knexMain('eventparticipants').insert({
-            event_id: event.event_id,
-            participant_id: participant.participant_id,
+            // Map expected attendance range to approximate value
+            let estimated_attendance;
+            switch (expected_attendance) {
+                case '0-10':
+                    estimated_attendance = 5;
+                    break;
+                case '10-30':
+                    estimated_attendance = 20;
+                    break;
+                case '30-50':
+                    estimated_attendance = 40;
+                    break;
+                case '50-100':
+                    estimated_attendance = 75;
+                    break;
+                case '100+':
+                    estimated_attendance = 100;
+                    break;
+                default:
+                    estimated_attendance = null;
+            }
+
+            // Insert the event
+            const [newEvent] = await trx('events')
+                .insert({
+                    event_name,
+                    date_of_event,
+                    secondary_event_date,
+                    event_address: street_address,
+                    event_city: city,
+                    event_state: state,
+                    event_zip: zip,
+                    event_description,
+                    estimated_attendance,
+                    estimated_event_duration: `${estimated_event_duration} hours`,
+                    privacy,
+                    number_of_sewers: sew_option === 'yes' ? parseInt(sewing_people) || 0 : 0,
+                    number_of_machines: sew_option === 'yes' ? parseInt(sewing_machines) || 0 : 0,
+                    number_of_children_under_10: children_option === 'yes' ? parseInt(children_count) || 0 : 0,
+                })
+                .returning('event_id');
+            const event_id = newEvent.event_id;
+
+            // Insert into EventParticipants table
+            await trx('eventparticipants').insert({
+                event_id,
+                participant_id,
+                attendance_status: 'Registered',
+            });
         });
 
-        console.log('Event and participant linked successfully.');
-
-        res.redirect('/'); // Redirect to the homepage or a confirmation page
+        res.render('completedEventRequest');
     } catch (error) {
-        console.error('Error adding event or participant:', error);
-        res.status(500).send('An error occurred while adding the event.');
+        console.error('Error adding event:', error);
+        res.status(500).send('An error occurred while processing your request.');
     }
 });
 
+
+
+
+app.post('/deleteEvent/:id', async (req, res) => {
+    const eventId = req.params.id;
+
+    try {
+        // Delete the event and related participants
+        await knexMain.transaction(async (trx) => {
+            await trx('eventparticipants').where('event_id', eventId).del(); // Remove related participants
+            await trx('events').where('event_id', eventId).del(); // Remove the event itself
+        });
+
+        console.log(`Event with ID ${eventId} deleted successfully`);
+        res.redirect('/staffView'); // Redirect to the staff view
+    } catch (error) {
+        console.error('Error deleting event:', error);
+        res.status(500).send('An error occurred while deleting the event.');
+    }
+});
 
 
 

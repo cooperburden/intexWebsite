@@ -93,9 +93,13 @@
                                     <td><%= event.completed ? 'Yes' : 'No' %></td>
                                     <td>
                                         <a href="/editPastEvent/<%= event.event_id %>" class="btn btn-sm btn-primary">Edit</a>
-                                        <form action="/deleteEvent/<%= event.event_id %>" method="POST" onsubmit="return confirm('Are you sure you want to delete this event?');" style="display: inline;">
-                                            <button class="btn btn-sm btn-danger" type="submit">Delete</button>
-                                        </form>
+                                        <form 
+                                            onsubmit="return confirm('Are you sure you want to delete the past event: <%= event.event_name %>?')" 
+                                            method="POST" 
+                                            action="/deleteEvent/<%= event.event_id %>"
+                                        >
+                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
                                     </td>
                                 </tr>
                             <% }) %>
@@ -150,8 +154,12 @@
                                     <td><%= event.completed ? 'Yes' : 'No' %></td>
                                     <td>
                                         <a href="/editUpcomingEvent/<%= event.event_id %>" class="btn btn-sm btn-primary">Edit</a>
-                                        <form action="/deleteEvent/<%= event.event_id %>" method="POST" onsubmit="return confirm('Are you sure you want to delete this event?');" style="display: inline;">
-                                            <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+                                        <form 
+                                            onsubmit="return confirm('Are you sure you want to delete the event: <%= event.event_name %>?')" 
+                                            method="POST" 
+                                            action="/deleteEvent/<%= event.event_id %>"
+                                            >
+                                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                         </form>
                                     </td>
                                 </tr>
@@ -192,7 +200,7 @@
                                     <td>
                                         <div class="btn-group">
                                             <a href="/editEmployee/<%= employee.emp_id %>" class="btn btn-sm btn-primary">Edit</a>
-                                            <form action="/deleteEmployee/<%= employee.emp_id %>" method="POST" onsubmit="return confirm('Are you sure you want to delete this record?');" style="display: inline;">
+
                                                 <button class="btn btn-sm btn-danger" type="submit">Delete</button>
                                             </form>
                                         </div>
