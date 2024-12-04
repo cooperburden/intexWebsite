@@ -39,9 +39,9 @@ const knexStaffLogIn = require('knex')({
     connection: {
         host: 'localhost',
         user: 'postgres',
-        password: 'password',
+        password: 'Gegeen22',
         database: 'intexemployee', 
-        port: 5432,
+        port: 5433,
     }
 });
 
@@ -63,6 +63,7 @@ app.get('/staffView', (req, res) => {
         'emp_username',
         'emp_password'
       )
+      .orderBy('emp_id', 'asc')
       .then(employeeData => {
         res.render('staffView', {employees: employeeData});
       })
@@ -97,25 +98,26 @@ app.get('/staffLogin', (req, res) => {
 });
 
 // Handle login form submission
-app.post("/staffLogin", async (req, res) => {
-    const { emp_username, emp_password } = req.body;
+app.post("/StaffLogin", async (req, res) => {
+    const { username, password } = req.body;
 
     try {
-        // Query the database using Knex
-        const user = await knexStaffLogIn("employeetable")
+        // Query the employee table using Knex
+        const employee = await knexStaffLogIn("employee")
             .select("*")
-            .where({ emp_username, emp_password })
-            .first(); // `.first()` ensures we get only one result
+            .where({ emp_username: username, emp_password: password })
+            .first();
 
-        if (user) {
+        if (employee) {
             // Redirect to staffView.ejs if login is successful
-            res.render("staffView", { user: username });
+            res.render("staffView", { user: `${employee.emp_first_name} ${employee.emp_last_name}` });
         } else {
-            // If no match, reload login with error message
-            res.render("staffLogin", { error: "Invalid username or password", 
-                username: "", // Clear the username input
-                password: "", // Clear the password input
-                 });
+            // If no match, reload login with error message and clear inputs
+            res.render("staffLogin", {
+                error: "Invalid username or password",
+                username: "",
+                password: "",
+            });
         }
     } catch (err) {
         console.error("Error during login process:", err);
