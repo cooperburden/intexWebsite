@@ -197,35 +197,25 @@ app.post('/editEmployee/:id', async (req, res) => {
 app.post("/staffLogin", async (req, res) => {
     const { emp_username, emp_password } = req.body;
 
-    console.log("Username:", emp_username); // Debug log
-    console.log("Password:", emp_password); // Debug log
+    console.log("Received Username:", emp_username); // Debug log
+    console.log("Received Password:", emp_password); // Debug log
 
     try {
-        // Query the employee table for the logged-in user
         const employee = await knexStaff("employeetable")
             .select("emp_username", "emp_password", "emp_first_name", "emp_last_name")
             .where("emp_username", emp_username)
             .andWhere("emp_password", emp_password)
-            .first();
+            .first()
+            .debug(console.log); // Log the generated SQL query
 
         if (employee) {
-            // Query all employees to pass to staffView.ejs
-            const employees = await knexStaff("employeetable").select(
-                "emp_id",
-                "emp_first_name",
-                "emp_last_name",
-                "emp_email",
-                "emp_phone",
-                "emp_username"
-            );
-
-            // Render the staffView page with user and employees data
-            res.render("staffView", { 
+            console.log("Employee found:", employee);
+            res.render("staffView", {
                 user: `${employee.emp_first_name} ${employee.emp_last_name}`,
-                employees 
+                employees: [], // We'll fetch this later
             });
         } else {
-            // If no match, reload login with error message
+            console.log("No matching employee found.");
             res.render("staffLogin", {
                 errorMessage: "Invalid username or password",
             });
