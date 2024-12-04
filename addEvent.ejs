@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request an Event</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #b8babb; /* Light gray background */
+        }
+
+        .form-container {
+            background-color: #ffffff; /* White form background */
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            padding: 20px;
+        }
+
+        h1 {
+            color: #343a40; /* Dark gray */
+        }
+
+        label {
+            font-weight: 500;
+            color: #495057; /* Medium-dark gray */
+        }
+
+        .form-label span {
+            font-size: 0.6em;
+            color: #6c757d; /* Light gray */
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container my-5">
+        <div class="form-container mx-auto p-4">
+            <h1 class="mb-4 text-center">Please Fill Out This Form to Request a New Event</h1>
+            <form action="/addEvent" method="POST" class="needs-validation" novalidate>
+                <!-- First and Last Name -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="first_name" class="form-label">First Name</label>
+                        <input 
+                            type="text" 
+                            id="first_name" 
+                            name="first_name" 
+                            class="form-control" 
+                            placeholder="Enter your first name" 
+                            aria-label="First Name"
+                            required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="last_name" class="form-label">Last Name</label>
+                        <input 
+                            type="text" 
+                            id="last_name" 
+                            name="last_name" 
+                            class="form-control" 
+                            placeholder="Enter your last name" 
+                            aria-label="Last Name"
+                            required>
+                    </div>
+                </div>
+
+                <!-- Email and Phone -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="d_email" class="form-label">Your Email Address</label>
+                        <input 
+                            type="email" 
+                            id="d_email" 
+                            name="d_email" 
+                            class="form-control" 
+                            placeholder="yourname@example.com" 
+                            aria-label="Email Address"
+                            required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="d_phone_number" class="form-label">Your Phone Number</label>
+                        <input 
+                            type="tel" 
+                            id="d_phone_number" 
+                            name="d_phone_number" 
+                            class="form-control"
+                            placeholder="123-456-7890" 
+                            aria-label="Phone Number"
+                            maxlength="12" 
+                            required
+                            oninput="formatPhoneNumber(this)">
+                    </div>
+                </div>
+
+                <!-- Event Name -->
+                <div class="mb-3">
+                    <label for="event_name" class="form-label">Event Name</label>
+                    <input 
+                        type="text" 
+                        id="event_name" 
+                        name="event_name" 
+                        class="form-control"
+                        placeholder="e.g., South Mountain 5th Ward" 
+                        aria-label="Event Name"
+                        required>
+                </div>
+
+                <!-- Event Dates -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <br>
+                        <label for="date_of_activity" class="form-label">Event Date</label>
+                        <input 
+                            type="date" 
+                            id="date_of_activity" 
+                            name="date_of_activity" 
+                            class="form-control"
+                            aria-label="Event Date"
+                            required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="secondary_date_of_activity" class="form-label">Secondary Event Date
+                            <span>(due to the high demand of our project, sometimes your chosen date may not be available. Is there another date that works?)</span>
+                        </label>
+                        <input 
+                            type="date" 
+                            id="secondary_date_of_activity" 
+                            name="secondary_date_of_activity" 
+                            class="form-control"
+                            aria-label="Secondary Event Date"
+                            required>
+                    </div>
+                </div>
+
+                <!-- Activity Address and Expected Attendance -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="activity_address" class="form-label">Activity Address</label>
+                        <input 
+                            type="text" 
+                            id="activity_address" 
+                            name="activity_address" 
+                            class="form-control"
+                            placeholder="Enter the activity address" 
+                            aria-label="Activity Address"
+                            required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="expected_attendance" class="form-label">Expected Attendance</label>
+                        <select 
+                            id="expected_attendance" 
+                            name="expected_attendance" 
+                            class="form-select" 
+                            aria-label="Expected Attendance" 
+                            required>
+                            <option value="" disabled selected>Select an option</option>
+                            <option value="0-10">0-10</option>
+                            <option value="10-30">11-30</option>
+                            <option value="30-50">31-50</option>
+                            <option value="50-100">51-100</option>
+                            <option value="100+">100+</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Estimated Time -->
+                <div class="mb-3">
+                    <label for="estimated_duration" class="form-label">Estimated Time Duration of Activity</label>
+                    <div style="display: flex; align-items: center; gap: 10px; max-width: 30%;">
+                        <input 
+                            type="number" 
+                            id="estimated_duration" 
+                            name="estimated_duration" 
+                            class="form-control" 
+                            placeholder="Enter duration" 
+                            aria-label="Estimated Duration" 
+                            min="0" 
+                            required>
+                        <span>hours</span>
+                    </div>
+                </div>
+
+                <!-- Event Description -->
+                <div class="mb-3">
+                    <label for="event_description" class="form-label">Event Description</label>
+                    <ul style="list-style-type: disc; padding-left: 20px; margin-top: 5px; color: #6c757d; font-size: 0.9em;">
+                        <li>Describe the size of the space we will work in.</li>
+                        <li>How many tables can be provided, and what shape are they?</li>
+                        <li>Any other information for us to know ahead of time?</li>
+                    </ul>
+                    <textarea 
+                        id="event_description" 
+                        name="event_description" 
+                        rows="4" 
+                        class="form-control"
+                        placeholder="Provide details here" 
+                        aria-label="Event Description"></textarea>
+                </div>
+
+                <!-- Do You Want to Sew at This Event? -->
+                <div class="mb-3">
+                    <label class="form-label">Do you want to sew at this event?</label>
+                    <div>
+                        <input 
+                            type="radio" 
+                            id="sew_yes" 
+                            name="sew_option" 
+                            value="yes"
+                            onclick="toggleSewQuestions()">
+                        <label for="sew_yes">Yes</label>
+                        <br>
+                        <input 
+                            type="radio" 
+                            id="sew_no" 
+                            name="sew_option" 
+                            value="no"
+                            onclick="toggleSewQuestions()">
+                        <label for="sew_no">No, just other vest preparation activities</label>
+                    </div>
+                </div>
+
+                <!-- Additional Questions (Initially Hidden) -->
+                <div id="sew_questions" style="display: none; margin-left: 20px;">
+                    <div class="row">
+                        <!-- How many people can sew? -->
+                        <div class="col-md-6 mb-3">
+                            <label for="sewing_people" class="form-label">How many people can sew?</label>
+                            <input 
+                                type="text" 
+                                id="sewing_people" 
+                                name="sewing_people" 
+                                class="form-control" 
+                                placeholder="Enter a value">
+                        </div>
+
+                        <!-- How many sewing machines can be provided? -->
+                        <div class="col-md-6 mb-3">
+                            <label for="sewing_machines" class="form-label">How many sewing machines can be provided?</label>
+                            <input 
+                                type="text" 
+                                id="sewing_machines" 
+                                name="sewing_machines" 
+                                class="form-control" 
+                                placeholder="Enter a value">
+                        </div>
+                    </div>
+                </div>
+
+
+<!-- Are there any children under the age of 10 helping? -->
+<div class="mb-3">
+    <label class="form-label">Are there any children under the age of 10 helping?</label>
+    <div>
+        <input 
+            type="radio" 
+            id="children_yes" 
+            name="children_option" 
+            value="yes" 
+            onclick="toggleChildrenInput()">
+        <label for="children_yes">Yes</label>
+        <br>
+        <input 
+            type="radio" 
+            id="children_no" 
+            name="children_option" 
+            value="no" 
+            onclick="toggleChildrenInput()">
+        <label for="children_no">No</label>
+    </div>
+</div>
+
+<!-- How many children under the age of 10? (Initially Hidden) -->
+<div style="max-width: 50%;" id="children_input" style="display: none; margin-left: 20px;">
+    <label for="children_count" class="form-label">How many children under 10?</label>
+    <input 
+        type="number;" 
+        id="children_count" 
+        name="children_count" 
+        class="form-control" 
+        placeholder="Enter the number of children"
+        min="0">
+</div>
+
+<script>
+    function toggleChildrenInput() {
+        // Get the radio buttons and the hidden input field
+        const childrenYes = document.getElementById('children_yes');
+        const childrenInput = document.getElementById('children_input');
+
+        // Show the input field if "Yes" is selected, hide it otherwise
+        if (childrenYes.checked) {
+            childrenInput.style.display = 'block';
+        } else {
+            childrenInput.style.display = 'none';
+        }
+    }
+</script>
+
+
+
+                <!-- Privacy -->
+                <fieldset class="mb-3">
+                    <legend class="form-label">Privacy</legend>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="privacy" value="Private" id="privacyPrivate" checked >
+                        <label class="form-check-label" for="privacyPrivate">
+                            Private
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="privacy" value="Public" id="privacyPublic" >
+                        <label class="form-check-label" for="privacyPublic">
+                            Public 
+                            <span style="font-size: 0.8em; color: #6c757d;">
+                                (would you mind if other people, not part of your organization, can show up and help?)
+                            </span>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary w-100">Submit Event</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleSewQuestions() {
+            const sewYes = document.getElementById('sew_yes');
+            const sewQuestions = document.getElementById('sew_questions');
+            sewQuestions.style.display = sewYes.checked ? 'block' : 'none';
+        }
+
+        function formatPhoneNumber(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length <= 3) input.value = value;
+            else if (value.length <= 6) input.value = `${value.slice(0, 3)}-${value.slice(3)}`;
+            else input.value = `${value.slice(0, 3)}-${value.slice(3, 6)}-${value.slice(6, 10)}`;
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
