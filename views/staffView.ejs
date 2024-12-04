@@ -52,23 +52,36 @@
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>Column 1</th>
-                                <th>Column 2</th>
-                                <th>Column 3</th>
-                                <th>Actions</th>
+                                <th style="text-align: center;">Event ID</th>
+                                <th style="text-align: center;">Event Name</th>
+                                <th style="text-align: center;">Date of Event</th>
+                                <th style="text-align: center;">Event Address</th>
+                                <th style="text-align: center;">Event City</th>
+                                <th style="text-align: center;">Event State</th>
+                                <th style="text-align: center;">Event Zip</th>
+                                <th style="text-align: center;">Actual Attendance</th>
+                                <th style="text-align: center;">Actual Event Duration</th>
+                                <th style="text-align: center;">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Data 1</td>
-                                <td>Data 2</td>
-                                <td>Data 3</td>
-                            </tr>
-                            <tr>
-                                <td>Data 4</td>
-                                <td>Data 5</td>
-                                <td>Data 6</td>
-                            </tr>
+                            <% events.forEach(event => { %>
+                                <tr>
+                                    <td style="text-align: center;"><%= event.event_id %></td>
+                                    <td style="text-align: center;"><%= event.event_name %></td>
+                                    <td style="text-align: center;"><%= event.date_of_event %></td>
+                                    <td style="text-align: center;"><%= event.event_address %></td>
+                                    <td style="text-align: center;"><%= event.event_city %></td>
+                                    <td style="text-align: center;"><%= event.event_state %></td>
+                                    <td style="text-align: center;"><%= event.event_zip %></td>
+                                    <td style="text-align: center;"><%= event.actual_attendance %></td>
+                                    <td style="text-align: center;"><%= event.actual_event_duration %></td>
+                                    <td style="text-align: center;">
+                                        <button class="btn btn-sm btn-primary">Edit</button>
+                                        <button class="btn btn-sm btn-danger">Delete</button>
+                                    </td>
+                                </tr>
+                            <% }) %>
                         </tbody>
                     </table>
                 </div>
@@ -82,25 +95,48 @@
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>Event ID</th>
-                                <th>Event Name</th>
-                                <th>Date</th>
-                                <th>Location</th>
-                                <th>Actions</th>
+                                <th style="text-align: center;">Event ID</th>
+                                <th style="text-align: center;">Event Name</th>
+                                <th style="text-align: center;">Date of Event</th>
+                                <th style="text-align: center;">Event Address</th>
+                                <th style="text-align: center;">Event City</th>
+                                <th style="text-align: center;">Event State</th>
+                                <th style="text-align: center;">Event Zip</th>
+                                <th style="text-align: center;">Event Description</th>
+                                <th style="text-align: center;">Estimated Attendance</th>
+                                <th style="text-align: center;">Estimated Event Duration</th>
+                                <th style="text-align: center;">Privacy</th>
+                                <th style="text-align: center;">Number of Sewers</th>
+                                <th style="text-align: center;">Number of Machines</th>
+                                <th style="text-align: center;">Number of Children Under 10</th>
+                                <th style="text-align: center;">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Sample Event</td>
-                                <td>2024-12-05</td>
-                                <td>New York</td>
-                                <td>
-                                    <button class="btn btn-sm btn-primary">Edit</button>
-                                    <button class="btn btn-sm btn-danger">Delete</button>
-                                </td>
-                            </tr>
+                            <% events.forEach(event => { %>
+                                <tr>
+                                    <td style="text-align: center;"><%= event.event_id %></td>
+                                    <td style="text-align: center;"><%= event.event_name %></td>
+                                    <td style="text-align: center;"><%= event.date_of_event %></td>
+                                    <td style="text-align: center;"><%= event.event_address %></td>
+                                    <td style="text-align: center;"><%= event.event_city %></td>
+                                    <td style="text-align: center;"><%= event.event_state %></td>
+                                    <td style="text-align: center;"><%= event.event_zip %></td>
+                                    <td style="text-align: center;"><%= event.event_description %></td>
+                                    <td style="text-align: center;"><%= event.estimated_attendance %></td>
+                                    <td style="text-align: center;"><%= event.estimated_event_duration %></td>
+                                    <td style="text-align: center;"><%= event.privacy %></td>
+                                    <td style="text-align: center;"><%= event.number_of_sewers %></td>
+                                    <td style="text-align: center;"><%= event.number_of_machines %></td>
+                                    <td style="text-align: center;"><%= event.number_of_children_under_10 %></td>
+                                    <td style="text-align: center;">
+                                        <button class="btn btn-sm btn-primary">Edit</button>
+                                        <button class="btn btn-sm btn-danger">Delete</button>
+                                    </td>
+                                </tr>
+                            <% }) %>
                         </tbody>
+                    </table>                    
                     </table>
                 </div>
             </div>

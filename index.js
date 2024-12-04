@@ -28,20 +28,15 @@ const knexStaff = require('knex')({
     connection: {
         host: 'localhost',
         user: 'postgres',
-        password: 'password',
+        password: 'Ilovemom2!',
         database: 'intexemployee', 
         port: 5432,
     }
 });
 
-knexStaff.raw('SELECT 1+1 AS result')
-    .then(() => console.log('Database connection successful'))
-    .catch(error => {
-        console.error('Database connection failed:', error);
-    });
-
 app.get('/staffView', (req, res) => {
-    knexStaff('employeetable') // Fetching from the `employee` table in the `intexStaff` database
+    // Fetch employee data
+    const employeeQuery = knexStaff('employee')
       .select(
         'emp_id',
         'emp_first_name',
@@ -50,36 +45,39 @@ app.get('/staffView', (req, res) => {
         'emp_phone',
         'emp_username',
         'emp_password'
-      )
-      .then(employeeData => {
-        res.render('staffView', {employees: employeeData});
-      })
-      .catch(error => {
-        console.error('Error querying database:', error);
-      });
-  });
-  
+      );
 
-app.get('/staffView', (req, res) => {
-    knexStaff('employee') // Fetching from the `employee` table in the `intexStaff` database
+    // Fetch event data
+    const eventQuery = knexMain('events')
       .select(
-        'emp_id',
-        'emp_first_name',
-        'emp_last_name',
-        'emp_email',
-        'emp_phone',
-        'emp_username',
-        'emp_password'
-      )
-      .then(employeeData => {
-        res.render('staffView', {employees: employeeData });
-        // Right now, nothing is done with `employeeData`
+        'event_id',
+        'event_name',
+        'date_of_event',
+        'event_address',
+        'event_city',
+        'event_state',
+        'event_zip',
+        'event_description',
+        'estimated_attendance',
+        'actual_attendance',
+        'estimated_event_duration',
+        'actual_event_duration',
+        'privacy',
+        'number_of_sewers',
+        'number_of_machines',
+        'number_of_children_under_10'
+      );
+
+    // Run both queries in parallel and combine results
+    Promise.all([employeeQuery, eventQuery])
+      .then(([employees, events]) => {
+        res.render('staffView', { employees, events });
       })
       .catch(error => {
         console.error('Error querying database:', error);
+        res.status(500).send('An error occurred while retrieving data.');
       });
-  });
-  
+});
 
 // Middleware to parse URL-encoded data
 app.use(express.urlencoded({extended: true}));
