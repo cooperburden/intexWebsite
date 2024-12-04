@@ -192,6 +192,40 @@ app.post('/editEmployee/:id', async (req, res) => {
 
 
 
+// Handle login form submission
+app.post("/staffLogin", async (req, res) => {
+    const { username, password } = req.body;
+ 
+ 
+    try {
+        // Query the employee table using Knex
+        const employee = await knexStaff("employeetable")
+            .select("emp_username", "emp_password")
+            .where({ emp_username: username, emp_password: password })
+            .first();
+ 
+ 
+        if (employee) {
+            // Redirect to staffView.ejs if login is successful
+            res.render("staffView", { user: `${employee.emp_first_name} ${employee.emp_last_name}` });
+        } else {
+            // If no match, reload login with error message and clear inputs
+            res.render("staffLogin", {
+                error: "Invalid username or password",
+                username: "",
+                password: "",
+            });
+        }
+    } catch (err) {
+        console.error("Error during login process:", err);
+        res.status(500).send("Internal Server Error");
+    }
+ });
+ 
+
+
+
+
 
 
 app.listen(port, () => {
