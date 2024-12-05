@@ -676,6 +676,21 @@ app.get('/aboutUs', (req, res) => {
     res.render('aboutUs');
 });
 
+// Route for Carol's story
+app.get('/carol', (req, res) => {
+    res.render('carol'); // Renders the carol.ejs file
+});
+
+// Route for Marcus's story
+app.get('/marcus', (req, res) => {
+    res.render('marcus'); // Renders the marcus.ejs file
+});
+
+// Route for Burden's story
+app.get('/burden', (req, res) => {
+    res.render('burden'); // Renders the pun.ejs file
+});
+
 // Start server
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
