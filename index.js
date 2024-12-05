@@ -15,27 +15,71 @@ const knexMain = require('knex')({
         password: process.env.RDS_PASSWORD || 'password',
         database: process.env.RDS_DB_NAME || 'intexMain',
         port: process.env.RDS_PORT || 5432,
-        ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
+        ssl : process.env.DB_SSL ? { rejectUnauthorized : false } : false,
 
     },
 });
+
 
 const knexStaff = require('knex')({
     client: 'pg',
     connection: {
         host: process.env.RDS_HOSTNAME || 'localhost',
-        user: process.env.RDS_USERNAME || 'postgres',
-        password: process.env.RDS_PASSWORD || 'password',
+        user: process.env.RDS_USERNAME_2 || 'postgres',
+        password: process.env.RDS_PASSWORD_2 || 'password',
         database: process.env.RDS_DB_NAME_2 || 'intexemployee',
         port: process.env.RDS_PORT || 5432,
-        ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
+        ssl : process.env.DB_SSL ? { rejectUnauthorized : false } : false
     },
 });
 
-// Confirm database connection
-knexStaff.raw('SELECT 1+1 AS result')
-    .then(() => console.log('Database connection successful'))
-    .catch((error) => console.error('Database connection failed:', error));
+app.get('/staffView', (req, res) => {
+    // Fetch employee data
+    const employeeQuery = knexStaff('employee')
+      .select(
+        'emp_id',
+        'emp_first_name',
+        'emp_last_name',
+        'emp_email',
+        'emp_phone',
+        'emp_username',
+        'emp_password'
+      );
+
+    // Fetch event data
+    const eventQuery = knexMain('events')
+      .select(
+        'event_id',
+        'event_name',
+        'date_of_event',
+        'event_address',
+        'event_city',
+        'event_state',
+        'event_zip',
+        'event_description',
+        'estimated_attendance',
+        'actual_attendance',
+        'estimated_event_duration',
+        'actual_event_duration',
+        'privacy',
+        'number_of_sewers',
+        'number_of_machines',
+        'number_of_children_under_10'
+      );
+
+    // Run both queries in parallel and combine results
+    Promise.all([employeeQuery, eventQuery])
+      .then(([employees, events]) => {
+        res.render('staffView', { employees, events });
+      })
+      .catch(error => {
+        console.error('Error querying database:', error);
+        res.status(500).send('An error occurred while retrieving data.');
+      });
+});
+
+// Middleware to parse URL-encoded data
+app.use(express.urlencoded({extended: true}));
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
@@ -56,7 +100,37 @@ app.get('/staffLogin', (req, res) => {
     res.render('staffLogin', { errorMessage: null });
 });
 
-app.post('/staffLogin', async (req, res) => {
+// Handle login form submission
+app.post("/StaffLogin", async (req, res) => {
+    const { username, password } = req.body;
+
+    try {
+        // Query the employee table using Knex
+        const employee = await knexStaff("employeetable")
+            .select("emp_username", "emp_password")
+            .where({ emp_username: username, emp_password: password })
+            .first();
+
+        if (employee) {
+            // Redirect to staffView.ejs if login is successful
+            res.render("staffView", { user: `${employee.emp_first_name} ${employee.emp_last_name}` });
+        } else {
+            // If no match, reload login with error message and clear inputs
+            res.render("staffLogin", {
+                error: "Invalid username or password",
+                username: "",
+                password: "",
+            });
+        }
+    } catch (err) {
+        console.error("Error during login process:", err);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+
+
+app.post("/staffLogin", async (req, res) => {
     const { emp_username, emp_password } = req.body;
 
     try {
@@ -241,6 +315,7 @@ app.get('/staffView', async (req, res) => {
 
         const events = await knexMain('events')
             .select('*');
+
 
         // Filter and sort past events (completed = true)
         const pastEvents = events
@@ -605,14 +680,25 @@ app.get('/thankYouParticipant/:eventId', (req, res) => {
     res.render('thankYouParticipant', { eventId });  // Pass eventId to the template
 });
 
+// about us get route
+app.get('/aboutUs', (req, res) => {
+    res.render('aboutUs');
+});
 
+// Route for Carol's story
+app.get('/carol', (req, res) => {
+    res.render('carol'); // Renders the carol.ejs file
+});
 
+// Route for Marcus's story
+app.get('/marcus', (req, res) => {
+    res.render('marcus'); // Renders the marcus.ejs file
+});
 
-
-
-
-
-
+// Route for Burden's story
+app.get('/burden', (req, res) => {
+    res.render('burden'); // Renders the pun.ejs file
+});
 
 // Start server
 app.listen(port, () => {

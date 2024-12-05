@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,71 +9,123 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background-color: rgb(228, 221, 221);
+            background-color: #f2f2f2; /* Soft light gray background */
+            font-family: Arial, sans-serif;
         }
-
-        th, td {
+    
+        h1 {
+            color: #4a4a4a; /* Neutral text color */
+            font-size: 1.5rem;
+            font-weight: normal;
+            text-align: center;
+            margin-top: 20px;
+        }
+    
+        .nav-tabs .nav-link {
+            color: #6c757d;
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            font-weight: normal;
+        }
+    
+        .nav-tabs .nav-link.active {
+            background-color: #007bff;
+            color: white;
+            border: 1px solid #007bff;
+        }
+    
+        .table-responsive {
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            border-radius: 5px;
+            overflow-x: auto; /* Enable horizontal scrolling */
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on touch devices */
+            background: white; /* Ensure background stays consistent */
+        }
+    
+        .table {
+            margin: 0;
+            border-collapse: collapse;
+            width: 100%;
+        }
+    
+        .table th {
+            background-color: #f8f9fa;
+            color: #495057;
+            font-weight: normal;
+            text-transform: uppercase;
+        }
+    
+        .table td, .table th {
+            border: 1px solid #dee2e6;
+            padding: 10px;
             text-align: center;
             vertical-align: middle;
+            white-space: nowrap; /* Prevent table cells from wrapping */
         }
-
-        .btn-group {
-            display: flex;
-            justify-content: center;
-            gap: 1px;
+    
+        .table tbody tr:nth-child(even) {
+            background-color: #f9f9f9; /* Light gray alternating rows */
         }
-
-        .table td,
-        .table th {
-            padding: 10px;
+    
+        .btn-group .btn {
+            margin: 2px;
         }
-
-        /* Universal styling for tables */
-        .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            max-width: 100%;
+    
+        .btn-primary, .btn-danger, .btn-success {
+            border: none;
         }
-
-        /* Make the table more compact with smaller font size and reduced padding */
-        .table th, .table td {
-            padding: 0.25rem; /* Reduce padding for a tighter layout */
-            font-size: 0.85rem; /* Adjust font size for compact view */
-            white-space: normal;  /* Allow wrapping of text in columns */
-            word-wrap: break-word; /* Allow breaking words to fit in columns */
+    
+        .btn-primary {
+            background-color: #007bff;
         }
-
-        /* Optional: Style the buttons to make them more compact */
-        .btn-sm {
-            font-size: 0.8rem;
-            padding: 0.3rem 0.6rem;
+    
+        .btn-danger {
+            background-color: #dc3545;
         }
-
-        /* Adjust table layout for smaller screens */
-        @media (max-width: 768px) {
-            .table th, .table td {
-                font-size: 0.75rem; /* Further reduce font size */
-                padding: 0.2rem;   /* Even smaller padding */
-            }
+    
+        .btn-success {
+            background-color: #28a745;
         }
-
-        /* Style for date to show on multiple lines */
+    
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+    
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+    
+        .btn-success:hover {
+            background-color: #218838;
+        }
+    
         .event-date {
             display: flex;
-            flex-direction: column;  /* Stack the date and time vertically */
+            flex-direction: column;
             align-items: flex-start;
+            font-size: 0.85rem;
         }
-
+    
         .event-date-line {
-            font-weight: bold;
+            color: #343a40;
         }
-
+    
         .event-time-line {
-            font-size: 0.9rem;
-            color: gray;
+            color: #6c757d;
+        }
+    
+        @media (max-width: 768px) {
+            .table th, .table td {
+                font-size: 0.8rem;
+            }
         }
     </style>
+    
+    
+    
 </head>
+
 <body>
 
     <div class="container my-5">
@@ -294,7 +347,7 @@
 
          <!-- Table 5 Content -->
 <div class="tab-pane fade" id="table5" role="tabpanel" aria-labelledby="table5-tab">
-    <h2>Pending Events</h2>
+    <h1>Pending Events</h1>
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -331,4 +384,5 @@
     <!-- Bootstrap JS (for tabs to function) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

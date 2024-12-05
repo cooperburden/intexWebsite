@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Public Events</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Upcoming Public Events</h1>
+        
+        <!-- Button to go back to home -->
+        <a href="/" class="btn btn-primary mb-4">Back to Home Page</a>
+        
+        <!-- Check if there are any public events -->
+        <% if (events.length > 0) { %>
+            <ul class="list-group">
+                <% events.forEach(event => { %>
+                    <li class="list-group-item">
+                        <h5><%= event.event_name %></h5>
+                        <p><strong>Date:</strong> <%= event.date_of_event.toDateString() %></p>
+                        <p><strong>Time:</strong> <%= event.time_of_activity ? event.time_of_activity : 'TBD' %></p>
+                        <p><strong>Location:</strong> <%= event.event_address %>, <%= event.event_city %>, <%= event.event_state %> <%= event.event_zip %></p>
+                        <p><strong>Description:</strong> <%= event.event_description %></p>
+                        <a href="/participantJoining/<%= event.event_id %>" class="btn btn-primary">I want to join!</a>
+                    </li>
+                    </li>
+                <% }) %>
+            </ul>
+        <% } else { %>
+            <p>No public events available at the moment.</p>
+        <% } %>
+    </div>
+</body>
+</html>
