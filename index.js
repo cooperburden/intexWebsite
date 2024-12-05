@@ -10,22 +10,25 @@ app.set('view engine', 'ejs');
 const knexMain = require('knex')({
     client: 'pg',
     connection: {
-        host: 'localhost',
-        user: 'postgres',
-        password: 'password',
-        database: 'intexMain',
-        port: 5432,
+        host: process.env.RDS_HOSTNAME || 'localhost',
+        user: process.env.RDS_USERNAME || 'postgres',
+        password: process.env.RDS_PASSWORD || 'password',
+        database: process.env.RDS_DB_NAME || 'intexMain',
+        port: process.env.RDS_PORT || 5432,
+        ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
+
     },
 });
 
 const knexStaff = require('knex')({
     client: 'pg',
     connection: {
-        host: 'localhost',
-        user: 'postgres',
-        password: 'password',
-        database: 'intexemployee',
-        port: 5432,
+        host: process.env.RDS_HOSTNAME || 'localhost',
+        user: process.env.RDS_USERNAME || 'postgres',
+        password: process.env.RDS_PASSWORD || 'password',
+        database: process.env.RDS_DB_NAME_2 || 'intexemployee',
+        port: process.env.RDS_PORT || 5432,
+        ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
     },
 });
 
@@ -40,7 +43,7 @@ app.use(express.static('public'));
 app.use(express.json());
 
 // Server port
-const port = 3010;
+const port = process.env.PORT || 3010;
 
 // Routes
 // Home route
@@ -59,7 +62,7 @@ app.post('/staffLogin', async (req, res) => {
     try {
         const employee = await knexStaff('employeetable')
             .select('emp_username', 'emp_password', 'emp_first_name', 'emp_last_name')
-            .where({ emp_username, emp_password })
+            .where({ emp_username })
             .first();
 
         if (employee) {
@@ -67,23 +70,23 @@ app.post('/staffLogin', async (req, res) => {
 
             // Fetch all events
             const events = await knexMain('events').select('*');
-            
+
             // Filter and sort events
             const pastEvents = events
                 .filter(event => event.completed)
                 .sort((a, b) => new Date(b.date_of_event) - new Date(a.date_of_event));
-            
+
             const upcomingEvents = events
                 .filter(event => !event.completed)
                 .sort((a, b) => new Date(a.date_of_event) - new Date(b.date_of_event));
 
-                // Fetch all pending events (approved: false)
-            const pendingEvents = events.filter(event => event.approved === false);
-
+            // Filter for pending events (approved: false)
+            const pendingEvents = events
+                .filter(event => event.approved === false)
+                .sort((a, b) => new Date(a.date_of_event) - new Date(b.date_of_event));
 
             // Fetch all employees
-            const employees = await knexStaff('employeetable').select('*')
-            .orderBy('emp_id', 'asc');;
+            const employees = await knexStaff('employeetable').select('*').orderBy('emp_id', 'asc');
 
             // Pass data to the template
             res.render('staffView', {
@@ -91,7 +94,7 @@ app.post('/staffLogin', async (req, res) => {
                 employees,
                 pastEvents,
                 upcomingEvents,
-                pendingEvents,
+                pendingEvents,  // Now this is properly defined
             });
         } else {
             res.render('staffLogin', { errorMessage: 'Invalid username or password' });
@@ -101,6 +104,7 @@ app.post('/staffLogin', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+
 
 // Add Employee routes
 app.get('/addEmployee', (req, res) => {
@@ -209,20 +213,21 @@ app.post('/approveEvent/:eventId', async (req, res) => {
     }
 });
 
-// Deny Event Route
-app.post('/denyEvent/:eventId', async (req, res) => {
+// Deny Event Route (Delete Event)
+app.post('/rejectEvent/:eventId', async (req, res) => {
     const { eventId } = req.params;
     try {
         await knexMain('events')
             .where('event_id', eventId)
-            .update({ approved: false });  // Assuming 'approved' is a boolean field
+            .del();  // Use 'del()' to delete the record
 
-        res.redirect('/staffView');  // Redirect back to the staff view after the denial
+        res.redirect('/staffView');  // Redirect back to the staff view after deletion
     } catch (error) {
-        console.error('Error denying event:', error);
-        res.status(500).send('An error occurred while denying the event.');
+        console.error('Error deleting event:', error);
+        res.status(500).send('An error occurred while deleting the event.');
     }
 });
+
 
 
 
@@ -263,7 +268,9 @@ app.get('/staffView', async (req, res) => {
 
         // Filter for pending events (completed = false, approved = false)
         const pendingEvents = events
-            .filter(event => !event.completed && event.approved === false); // Only uncompleted and unapproved events
+        .filter(event => event.approved === false)
+        .sort((a, b) => new Date(a.date_of_event) - new Date(b.date_of_event));  // Add sorting if needed
+    
 
         // Pass all event categories and employees to the view
         res.render('staffView', { employees, pastEvents, upcomingEvents, pendingEvents });
