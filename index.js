@@ -23,18 +23,12 @@ const knexStaff = require('knex')({
     connection: {
         host: 'localhost',
         user: 'postgres',
-<<<<<<< HEAD
         password: 'Ilovemom2!',
         database: 'intexemployee', 
-=======
-        password: 'password',
-        database: 'intexemployee',
->>>>>>> 10b71026eeb07290704a0c98efce333e01d259d8
         port: 5432,
     },
 });
 
-<<<<<<< HEAD
 app.get('/staffView', (req, res) => {
     // Fetch employee data
     const employeeQuery = knexStaff('employee')
@@ -82,12 +76,6 @@ app.get('/staffView', (req, res) => {
 
 // Middleware to parse URL-encoded data
 app.use(express.urlencoded({extended: true}));
-=======
-// Confirm database connection
-knexStaff.raw('SELECT 1+1 AS result')
-    .then(() => console.log('Database connection successful'))
-    .catch((error) => console.error('Database connection failed:', error));
->>>>>>> 10b71026eeb07290704a0c98efce333e01d259d8
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
@@ -108,7 +96,6 @@ app.get('/staffLogin', (req, res) => {
     res.render('staffLogin', { errorMessage: null });
 });
 
-<<<<<<< HEAD
 // Handle login form submission
 app.post("/StaffLogin", async (req, res) => {
     const { username, password } = req.body;
@@ -140,9 +127,6 @@ app.post("/StaffLogin", async (req, res) => {
 
 
 app.post("/staffLogin", async (req, res) => {
-=======
-app.post('/staffLogin', async (req, res) => {
->>>>>>> 10b71026eeb07290704a0c98efce333e01d259d8
     const { emp_username, emp_password } = req.body;
 
     try {
@@ -687,20 +671,12 @@ app.get('/thankYouParticipant/:eventId', (req, res) => {
     res.render('thankYouParticipant', { eventId });  // Pass eventId to the template
 });
 
+// about us get route
+app.get('/aboutUs', (req, res) => {
+    res.render('aboutUs');
+});
 
-
-
-
-
-
-
-
-
-<<<<<<< HEAD
-
-=======
 // Start server
->>>>>>> 10b71026eeb07290704a0c98efce333e01d259d8
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
